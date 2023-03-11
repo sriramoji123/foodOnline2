@@ -8,8 +8,9 @@
 .show-notification
 {
     position: fixed;
-    bottom: fixed;
+    bottom: 100%;
     right: 20px;
     animation-name: show-toast;
-    animation-duration: 5s;
+    animation-duration: 8s;
+    z-index: 99;
 }

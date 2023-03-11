@@ -65,6 +65,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.get_vendor',
+                
             ],
         },
     },
@@ -150,6 +152,6 @@ EMAIL_PORT= 587
 EMAIL_HOST_USER = 'sriramoji.seemakurthi@gmail.com'
 
 #Set the 16 digit email password while cloning
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'wvrtpezeorkjqlry'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <sriramoji.seemakurthi@gmail.com>'
