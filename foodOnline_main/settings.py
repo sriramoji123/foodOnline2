@@ -154,6 +154,6 @@ EMAIL_PORT= 587
 EMAIL_HOST_USER = 'ramoji91@gmail.com'
 
 #Set the 16 digit email password while cloning
-EMAIL_HOST_PASSWORD = 'orxydvohoobokbhu'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <sriramoji.seemakurthi@gmail.com>'
