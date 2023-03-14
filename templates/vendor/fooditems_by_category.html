@@ -20,7 +20,7 @@
                         <div class="user-holder">
                             <h5 class="text-uppercase">Build your Food Menu</h5>
                             <hr>
-                            <button class="btn btn-secondary" onclick="history.back()"><i class="fa fa-angle-left" aria-hidden="true"></i></button>
+                            <button class="btn btn-secondary" onclick="history.back()"><i class="fa fa-angle-left" aria-hidden="true">Back</i></button>
                             <br>
                             <br>
                             <h6>Category: <span class="text-uppercase text-success">{{category}}</h6>
@@ -41,7 +41,19 @@
 
                                             </td>    
                                             {% comment %} <td>{{ cat.category_name}} </td> {% endcomment %}
-                                            <td><i class="fa fa-edit text-info"></i> &nbsp; <i class="fa fa-trash text-danger"></i></td>
+
+                                            <td>
+                                                {% if food.is_available %}
+                                                <span class="badge badge-success">Available
+                                                </span>
+                                                {% else %}
+                                                <span class="badge badge-danger">Not Available
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td><a href="{% url 'edit_food' food.id %}" style="color:unset;"><i class="fa fa-pencil" aria-hidden="true"></i> </a>&nbsp;
+                                                <a href="{% url 'delete_food' food.id %}" onclick="return confirm('Are you sure wou want to delete this food?')"><i class="fa fa-trash text-danger"></i> </a>
+                                                 </td>
                                             
                                         </tr>
                                     {% endfor %}
@@ -51,7 +63,7 @@
                             {% else %}
                               <h5 class="text-center">No food items found.</h5>
                               <div class="text-center">
-                                <a href="#" class="btn btn-success "><i class="fa fa-plus"></i>Add Food</a>
+                                <a href={% url 'add_food' %} class="btn btn-success "><i class="fa fa-plus"></i>Add Food</a>
                               </div>  
                             {% endif %}
                         </div>
