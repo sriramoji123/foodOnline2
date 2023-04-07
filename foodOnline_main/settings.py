@@ -154,8 +154,8 @@ MESSAGE_TAGS={
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT= 587
 EMAIL_HOST_USER = 'ramoji91@gmail.com'
-#hello
+
 #Set the 16 digit email password while cloning
-EMAIL_HOST_PASSWORD = 'orxydvohoobokbhu'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <sriramoji.seemakurthi@gmail.com>'
