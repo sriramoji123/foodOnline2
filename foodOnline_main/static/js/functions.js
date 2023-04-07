@@ -587,3 +587,159 @@ jQuery(document).ready(function ($) {
         jQuery('[data-toggle="tooltip"]').tooltip()
     })
 });
+
+$(document).ready(function(){
+
+    //add to cart functionality
+    $('.add_to_cart').on('click',function(e){
+        e.preventDefault();
+        food_id= $(this).attr('data-id');
+        url = $(this).attr('data-url');
+
+        
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response)
+            {
+                console.log("Printing the entire response");
+                console.log(response);
+                console.log("Printing only the final cart value");
+                // console.log(response.cart_counter["cart_count"]);
+                // $('#cart_counter').html(response.cart_counter["cart_count"])
+                // $('#qty-'+food_id).html(response.qty)
+
+                if (response.status == 'login_required')
+                    {
+                        swal(response.message,'','info').then(function(){
+                            window.location = '/login';
+                        })
+
+                    }
+                else if (response.status == 'Failed')
+                    {
+                        swal(response.message,'','error').then(function(){
+                            
+                        })
+
+                    }
+                else
+                    {
+                        $('#cart_counter').html(response.cart_counter["cart_count"])
+                        $('#qty-'+food_id).html(response.qty)
+                    }
+
+            }
+
+        })
+    })
+
+    // place the cart item quantity on load
+
+    $('.item_qty').each(function(){
+        var th_id= $(this).attr('id')
+        var qty = $(this).attr('data-qty')
+        console.log(qty)
+        $('#'+th_id).html(qty)
+    })
+
+
+
+
+    //decrease to cart functionality
+    $('.decrease_cart').on('click',function(e){
+        e.preventDefault();
+        food_id= $(this).attr('data-id');
+        url = $(this).attr('data-url');
+        cart_id = $(this).attr('id');
+        
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response)
+            {
+                console.log(response);
+                if (response.status == 'login_required')
+                    {
+                        swal(response.message,'','info').then(function(){
+                            window.location = '/login';
+                        })
+
+                    }
+                else if (response.status == 'Failed')
+                    {
+                        swal(response.message,'','error').then(function(){
+                            
+                        })
+
+                    }
+                else
+                {
+
+                $('#cart_counter').html(response.cart_counter["cart_count"])
+                $('#qty-'+food_id).html(response.qty)
+
+                if (window.location.path == "/cart/")
+                {
+                    removeCartItem(response.qty,cart_id);
+                    checkEmptyCart();
+                }
+            }
+
+            }
+
+        })
+    })
+
+    function removeCartItem(cartItemQty,cart_id)
+    {
+            if (cartItemQty <=0)
+            {
+                document.getElementById("cart-item-"+cart_id).remove()
+            }
+    }
+        
+    
+
+    $('.delete_cart').on('click',function(e){
+        e.preventDefault();
+       
+        cart_id= $(this).attr('data-id');
+        url = $(this).attr('data-url');
+       
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response)
+            {
+                console.log(response);
+                if (response.status == 'Failed')
+                    {
+                        swal(response.message,'','error')
+                    }
+                else
+                {
+                $('#cart_counter').html(response.cart_counter["cart_count"])
+                swal(response.status,'response.message','success')
+                removeCartItem(0,cart_id);
+                checkEmptyCart();
+                }
+
+            }
+
+        })
+    })
+
+    function checkEmptyCart()
+    {
+        var cart_counter = document.getElementById('cart_counter').innerHTML
+        if (cart_counter == 0)
+        {
+            document.getElementById("empty-cart").style.display= "block";   
+        }
+    }
+
+    
+
+
+});
