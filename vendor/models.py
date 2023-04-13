@@ -1,7 +1,10 @@
 from django.db import models
 from accounts.models import User,UserProfile
 from accounts.utils import send_notification
+from datetime import time, date, datetime
 # Create your models here.
+
+
 class Vendor(models.Model):
     user=models.OneToOneField(User,related_name='user',on_delete=models.CASCADE)
     user_profile=models.OneToOneField(UserProfile,related_name='userprofile',on_delete=models.CASCADE)
@@ -14,6 +17,29 @@ class Vendor(models.Model):
     
     def __str__(self):
         return self.vendor_name
+    
+    #All the member functions must have self as a parameter by default
+    def is_open(self):
+        today_date = date.today()
+        today = today_date.isoweekday()
+        
+        #Since self returns vendor_name which is the required thing we are just passing in the below line
+        current_opening_hour = OpeningHour.objects.filter(vendor=self,day=today)
+        now= datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        print(type(current_time))
+        
+        is_open = None
+        for i in current_opening_hour:
+            start = str(datetime.strptime(i.from_hour,"%I:%M %p").time())
+            end = str(datetime.strptime(i.to_hour,"%I:%M %p").time())
+        
+            if current_time > start and current_time < end:
+                is_open = True
+                break
+            else:
+                is_open = False
+        return is_open
     
     def save(self,*args,**kwargs):
         #This condition is to check if we are creating a new vendor or changing the existing one.
@@ -37,4 +63,33 @@ class Vendor(models.Model):
                     send_notification(mail_subject,mail_template,context)
         return super(Vendor,self).save(*args,**kwargs)
     
-                    
+
+
+DAYS=[
+     (1,("Monday")),
+     (2,("Tuesday")),
+     (3,("Wednesday")),
+     (4,("Thursday")),
+     (5,("Friday")),
+     (6,("Saturday")),
+     (7,("Sunday")),
+     
+]
+
+HOUR_OF_DAY_24=[(time(h,m).strftime('%I:%M %p'),time(h,m).strftime('%I:%M %p'))  for h in range(0,24) for m in (0,30)]
+class OpeningHour(models.Model):
+    vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
+    day = models.IntegerField(choices=DAYS)
+    from_hour = models.CharField(choices=HOUR_OF_DAY_24,max_length=20,blank=True)    
+    to_hour = models.CharField(choices=HOUR_OF_DAY_24,max_length=20,blank=True)
+    is_closed = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ('day','-from_hour')
+        
+        # Sets of field names that, taken together, must be unique
+        #The reason for adding this is lets say we have added opening time on Monday 10 2 & Monday 10 2. It throws an error
+        unique_together = ('vendor','day','from_hour','to_hour')
+        
+    def __str__(self):
+        return self.get_day_display()

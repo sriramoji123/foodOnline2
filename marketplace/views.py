@@ -1,11 +1,14 @@
 from django.shortcuts import get_object_or_404, render
-from vendor.models import Vendor
+from vendor.models import Vendor, OpeningHour
 from menu.models import Category, FoodItem
 from django.db.models import Prefetch
 from django.http import HttpResponse, JsonResponse
 from .models import Cart
 from .context_processors import get_cart_counter, get_cart_amounts
 from django.contrib.auth.decorators import login_required  
+from django.db.models import Q
+
+from datetime import date,datetime
 
 def marketplace(request):
     vendors= Vendor.objects.filter(is_approved= True, user__is_active=True)
@@ -25,6 +28,13 @@ def vendor_detail(request,vendor_slug):
             queryset = FoodItem.objects.filter(is_available=True )
         )
     )
+    opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day','-from_hour')
+    
+    
+    today_date = date.today()
+    today = today_date.isoweekday()
+    
+    current_opening_hour = OpeningHour.objects.filter(vendor=vendor,day=today)
     
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
@@ -33,7 +43,10 @@ def vendor_detail(request,vendor_slug):
     context = {
         'vendor' : vendor,
         'categories' : categories,
-        'cart_items':cart_items,    
+        'cart_items':cart_items,
+        'opening_hours':opening_hours, 
+        'current_opening_hour' : current_opening_hour ,
+         
     }
     return render(request,'marketplace/vendor_detail.html',context)
 
@@ -71,12 +84,12 @@ def decrease_cart(request,food_id):
                 #check if the user has already added that food to the cart
                 try:
                     chkCart = Cart.objects.get(user=request.user,fooditem=fooditem)
-                    if chkCart.quantity >= 1:    
+                    if chkCart.quantity > 1:    
                         chkCart.quantity-=1
                         chkCart.save()
                     else:
                         chkCart.quantity=0
-                        chkCart.delelete()
+                        chkCart.delete()
 
 #here get_cart_counter and get_cart_amounts both are functions present in context processor
                     return JsonResponse({"status":'Success','message':"Decreased the cart quantity",'cart_counter':get_cart_counter(request),'qty':chkCart.quantity,'cart_amount':get_cart_amounts(request)})
@@ -92,7 +105,7 @@ def decrease_cart(request,food_id):
 
 @login_required(login_url = 'login')
 def cart(request):
-    cart_items = Cart.objects.filter(user= request.user).order_by('created_at')
+    cart_items = Cart.objects.filter(user=request.user).order_by('created_at')
     
     context = {
         'cart_items':cart_items,
@@ -114,4 +127,21 @@ def delete_cart(request, cart_id):
         else:   
             return JsonResponse({"status":'Failed','message':"Invalid request!"})  
         
+    
+def search(request):
+    keyword = request.GET["keyword"]
+    
+    fetch_vendors_by_fooditems = FoodItem.objects.filter(food_title__icontains=keyword, is_available= True).values_list('vendor',flat=True)
+    print(fetch_vendors_by_fooditems)
+    
+    vendors=Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditems) | Q(vendor_name__icontains=keyword, is_approved=True,user__is_active=True))
+    vendors_count = vendors.count()
+    context={
+        'vendors':vendors,
+        'vendors_count':vendors_count
+        }
+    
+    return render(request,"marketplace/listings.html",context)
+    
+    
     

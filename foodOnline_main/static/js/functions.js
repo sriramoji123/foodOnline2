@@ -625,8 +625,8 @@ $(document).ready(function(){
                     }
                 else
                     {
-                        $('#cart_counter').html(response.cart_counter["cart_count"])
-                        $('#qty-'+food_id).html(response.qty)
+                        $('#cart_counter').html(response.cart_counter["cart_count"]);
+                        $('#qty-'+food_id).html(response.qty);
 
                         applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['grand_total'])
                     }
@@ -756,6 +756,104 @@ $(document).ready(function(){
 
         }   
     } 
+
+
+    $('.add_hour').on('click',function(e)
+    {
+        e.preventDefault();
+        var day= document.getElementById('id_day').value
+        var from_hour= document.getElementById('id_from_hour').value
+        var to_hour= document.getElementById('id_to_hour').value
+        var is_closed= document.getElementById('id_is_closed').checked
+        var csrf_token = $('input[name=csrfmiddlewaretoken]').val()
+        var url= document.getElementById('add_hour_url').value
+        
+
+        console.log(day,from_hour,to_hour,is_closed,csrf_token)
+
+        if (is_closed)
+        {
+            is_closed='True'
+            condition = "day!='' "
+        }
+        else
+        {
+            is_closed = 'False'
+            condition = "day!='' && from_hour!='' && to_hour!='' "
+        }
+
+        if(eval(condition))
+        {
+            console.log("inside the eval condition");
+            $.ajax({
+                type: 'POST',
+                url : url,
+                data: {
+                    'day':day,
+                    'from_hour': from_hour,
+                    'to_hour': to_hour,
+                    'is_closed': is_closed,
+                    'csrfmiddlewaretoken': csrf_token,
+                },
+                success: function(response)
+                {
+                    if(response.status == 'success')
+                    {
+                        if(response.is_closed == 'Closed')
+                        {
+                            //this html structure is similar to the existing one inside opening hours
+                            // Search for below line could see
+                            // {{ hour.from_hour}}-{{hour.to_hour}}
+                            html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>'  
+                                
+                        }
+                        else
+                        {
+                            html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>'+response.from_hour+' - '+response.to_hour+'</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>' 
+                        }
+
+                        // Here opening-hours is the class name of the table
+                        // Search for it in opening_hours.html page for more info
+                        $('.opening-hours').append(html)
+                        document.getElementById("opening_hours").reset();
+                    }
+                    else
+                    {
+                        console.log(response.error);
+                        swal(response.message,'','error')
+                        document.getElementById("opening_hours").reset();
+                    }
+                }   
+               
+                })
+        }
+        else
+        {
+            swal('please fill all the details','','info')   
+        }
+
+    })
+
+
+
+    // $('.remove_hour').on('click',function(e){
+    $(document).on('click','.remove_hour',function(e)
+    {
+        e.preventDefault();
+        url = $(this).attr('data-url');
+
+        $.ajax({
+            type:'GET',
+            url:url,
+            success: function(response){
+                if(response.status == 'success')
+                {
+                    // since the row has a call named hour-9 or hour-23 based on id
+                    document.getElementById('hour-'+response.id).remove()
+                }
+            }
+        })
+    })
 
 
 });
