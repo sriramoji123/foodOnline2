@@ -62,6 +62,7 @@ def add_to_cart(request,food_id):
                     chkCart = Cart.objects.get(user=request.user,fooditem=fooditem)
                     chkCart.quantity+=1
                     chkCart.save()
+                   
                     return JsonResponse({"status":'Success','message':"Increased the cart quantity",'cart_counter':get_cart_counter(request),'qty':chkCart.quantity, 'cart_amount':get_cart_amounts(request)})
                 except:
                     chkCart = Cart.objects.create(user=request.user,fooditem=fooditem,quantity=1)

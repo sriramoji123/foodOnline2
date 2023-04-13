@@ -627,8 +627,9 @@ $(document).ready(function(){
                     {
                         $('#cart_counter').html(response.cart_counter["cart_count"]);
                         $('#qty-'+food_id).html(response.qty);
-
-                        applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['grand_total'])
+                        console.log("the tax dixt is")
+                        console.log(response)
+                        applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax_dict'],response.cart_amount['grand_total'])
                     }
 
             }
@@ -680,7 +681,7 @@ $(document).ready(function(){
 
                 $('#cart_counter').html(response.cart_counter["cart_count"])
                 $('#qty-'+food_id).html(response.qty)
-                applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['grand_total'])
+                applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax_dict'],response.cart_amount['grand_total'])
 
                 if (window.location.pathname == "/cart/")
                 {
@@ -724,7 +725,7 @@ $(document).ready(function(){
                 {
                 $('#cart_counter').html(response.cart_counter["cart_count"])
                 swal(response.status,response.message,'success')
-                applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['grand_total'])
+                applyCartAmounts(response.cart_amount['subtotal'],response.cart_amount['tax_dict'],response.cart_amount['grand_total'])
                 removeCartItem(0,cart_id);
                 checkEmptyCart();
                 }
@@ -745,14 +746,30 @@ $(document).ready(function(){
 
 
     // Apply cart amount to the cart.
-    function applyCartAmounts(subtotal,tax,grand_total)
+    function applyCartAmounts(subtotal,tax_dict,grand_total)
     {
         if (window.location.pathname=="/cart/")
         {
             console.log("called you");
             $('#subtotal').html(subtotal)
-            $('#tax').html(tax)
             $('#total').html(grand_total)
+
+
+            // $('#tax').html(tax)
+
+            // updating the logic of calculating the tax
+            for(key1 in tax_dict)
+            {
+                console.log("the key1 is")
+                console.log(key1);
+                for(key2 in tax_dict[key1])
+                    {
+                        console.log("the key 2 is")
+                        console.log(key2);
+                         $('#tax-'+key1).html(tax_dict[key1][key2])
+                    }
+            }
+
 
         }   
     } 
