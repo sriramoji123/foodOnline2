@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'vendor',
     'menu',
     'marketplace',
+    'customers',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,7 @@ TEMPLATES = [
                 'accounts.context_processors.get_vendor',
                 'marketplace.context_processors.get_cart_counter',
                 'marketplace.context_processors.get_cart_amounts',
-                
+                'accounts.context_processors.get_user_profile',
             ],
         },
     },
@@ -157,6 +158,6 @@ EMAIL_PORT= 587
 EMAIL_HOST_USER = 'ramoji91@gmail.com'
 
 #Set the 16 digit email password while cloning
-# EMAIL_HOST_PASSWORD = 'orxydvohoobokbhu'
+EMAIL_HOST_PASSWORD = 'orxydvohoobokbhu'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'foodOnline Marketplace <sriramoji.seemakurthi@gmail.com>'

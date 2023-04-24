@@ -9,4 +9,4 @@ class TaxAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Cart,CartAdmin)
-admin.site.register(Tax)
+admin.site.register(Tax,TaxAdmin)

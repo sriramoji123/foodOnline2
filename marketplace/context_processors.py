@@ -18,6 +18,7 @@ def get_cart_counter(request):
 
 
 def get_cart_amounts(request):
+    tax_dict={}
     print("called")
     subtotal = 0
     tax= 0
@@ -28,7 +29,7 @@ def get_cart_amounts(request):
             fooditem = FoodItem.objects.get(pk=item.fooditem.id)
             subtotal += (fooditem.price * item.quantity)
         
-        tax_dict={}
+
         
         get_tax = Tax.objects.filter(is_active=True)
         for i in get_tax:
@@ -49,6 +50,5 @@ def get_cart_amounts(request):
         # tax = sum(x for key in tax_dict.values() for x in key.values())
         grand_total = subtotal + tax
         print(grand_total)
-        print(tax_dict)
     return dict(subtotal=subtotal, tax=tax, grand_total=grand_total,tax_dict=tax_dict)    
     

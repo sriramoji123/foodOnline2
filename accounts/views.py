@@ -207,6 +207,7 @@ def forgot_password(request):
     if request.method=="POST":
         email=request.POST['email']
         if User.objects.filter(email=email).exists():
+            #This is to verify if the email passes is an excat match or not ==> A.gmail !=a.gmail
             user = User.objects.get(email__exact=email)
             
             mail_subject = 'Rest Your Password'

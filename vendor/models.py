@@ -31,6 +31,9 @@ class Vendor(models.Model):
         
         is_open = None
         for i in current_opening_hour:
+            #This condition is written to check if the day is closed or not
+            #Because if the day is closed there start and end times will not be 
+            #submitted. and hence while retrieving them it throws an error.
             if not i.is_closed:
                 start = str(datetime.strptime(i.from_hour,"%I:%M %p").time())
                 end = str(datetime.strptime(i.to_hour,"%I:%M %p").time())

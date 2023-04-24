@@ -4,6 +4,7 @@ from vendor.models import Vendor
 
 
 def home(request):
+    #Thus is because we just wanted to show only first 4 useres in home.html
     vendors= Vendor.objects.filter(is_approved= True, user__is_active=True)[:4]
     print(vendors)
     context = {
