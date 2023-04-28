@@ -647,6 +647,13 @@ $(document).ready(function(){
     })
 
 
+    $('.order-placed btn btn-danger w-100 pt-2 mt-3').on('click',function(e){
+       e.preventDefault();
+       alert("hello");
+    })
+
+
+
 
 
     //decrease to cart functionality
@@ -694,6 +701,8 @@ $(document).ready(function(){
 
         })
     })
+
+    
 
     function removeCartItem(cartItemQty,cart_id)
     {
